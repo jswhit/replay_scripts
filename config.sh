@@ -3,6 +3,7 @@ echo "running on $machine using $NODES nodes"
 # forecast resolution 
 # 1/4 deg
 export RES=384  
+export mediator_procs=160 # set to RES by default
 export RES_INC=384
 export OCNRES=mx025
 # 1-deg
@@ -10,6 +11,7 @@ export OCNRES=mx025
 #export OCNRES=mx100
 
 #export skip_calc_increment='true'
+
 export exptname=C${RES}_replay_p8
 export coupled=${coupled:-'ATM_OCN_ICE'} # NO or ATM_OCN_ICE, should be set in submit_job.sh
 # The SUITE selection has been moved to the bottom of this script
