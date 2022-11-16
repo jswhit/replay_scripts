@@ -153,6 +153,8 @@ echo "nprocs_cpl="$nprocs_cpl
 echo "nprocs_atm="$nprocs_atm
 echo "nprocs_ocn="$nprocs_ocn
 echo "nprocs_ice="$nprocs_ice
+export mediator_procs=${mediator_procs:-$RES}
+echo "medprocs="$mediator_procs
 CPL1=0
 CPL2=`expr $nprocs_cpl - 1`
 ATM1=0
@@ -170,7 +172,7 @@ sed -i -e "s/NPROCS_OCN2/${OCN2}/g" nems.configure
 sed -i -e "s/NPROCS_ICE1/${ICE1}/g" nems.configure
 sed -i -e "s/NPROCS_ICE2/${ICE2}/g" nems.configure
 sed -i -e "s/OCNRES/${OCNRES}/g" nems.configure
-sed -i -e "s/ATMRES/${RES}/g" nems.configure
+sed -i -e "s/ATMRES/${mediator_procs}/g" nems.configure
 
 # insert correct starting time and output interval in diag_table template.
 sed -i -e "s/YYYY MM DD HH/${year} ${mon} ${day} ${hour}/g" diag_table
