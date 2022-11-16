@@ -192,6 +192,9 @@ fi
 fi # skip to here if fg_only = true
 
 echo "$analdate all done `date`"
+if [ $resubmit == "false" ]; then
+  exit
+endif
 
 # next analdate: increment by $ANALINC
 export analdate=`${incdate} $analdate $ANALINC`
