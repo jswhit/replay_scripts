@@ -26,6 +26,17 @@ if [ $NODES -eq 20 ]; then # 0.25 degree setup
   export nprocs_atm=680
   export nprocs_ice=40
   export nprocs_ocn=80
+elif [ $NODES -eq 23 ]; then # 0.25 degree setup
+  export gsi_control_thread=4
+  export control_threads=1
+  export control_proc=880  
+  export write_groups=1 # write groups for control forecast.
+  export write_tasks=80
+  export layout="10,10" # layout_x,layout_y (total # mpi tasks = $layout_x*$layout_y*6=($fg_proc/$fg_threads) - $write_tasks*$write_groups)
+  export nprocs_cpl=600
+  export nprocs_atm=680
+  export nprocs_ice=80
+  export nprocs_ocn=160
 elif [ $NODES -eq 27 ]; then # 0.25 degree setup
   export gsi_control_thread=2
   export control_threads=1
