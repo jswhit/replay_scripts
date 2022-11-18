@@ -3,7 +3,7 @@ echo "running on $machine using $NODES nodes"
 # forecast resolution 
 # 1/4 deg
 export RES=384  
-export mediator_procs=160 # set to RES by default
+export mediator_procs=120 # set to RES by default
 export RES_INC=384
 export OCNRES=mx025
 # 1-deg
@@ -198,8 +198,10 @@ export LEVS=127
 export FHMIN=0
 export FHMAX=9
 export FHOUT=3
-export RESTART_FREQ=3
-#export FHRESTART="0 3" # default is "$RESTART_FREQ,1"
+#export RESTART_FREQ_ATM=3
+export RESTART_FREQ_OCN=6
+# if FHRESTART given, RESTART_FREQ_ATM not used
+export FHRESTART="3 999"
 export FRAC_GRID=T
 export iaufhrs="6"
 export iau_delthrs="6" # iau_delthrs < 0 turns IAU off
@@ -230,7 +232,7 @@ if [ $perturbed_replay == "YES" ]; then
     export EPBL=0.8
     export EPBL_TAU=21600
     export EPBL_LSCALE=500000
-    # tese go in MOM_input
+    # these go in MOM_input
     export DO_OCNSPPT=True
     export DO_PERT_EPBL=True
 else
@@ -251,7 +253,7 @@ else
     export EPBL=0.
     export EPBL_TAU=21600
     export EPBL_LSCALE=500000
-    # tese go in MOM_input
+    # these go in MOM_input
     export DO_OCNSPPT=False
     export DO_PERT_EPBL=False
 fi

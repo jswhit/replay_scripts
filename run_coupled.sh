@@ -480,7 +480,7 @@ else
    fi
 fi
 
-FHRESTART=${FHRESTART:-"${RESTART_FREQ} -1"}
+FHRESTART=${FHRESTART:-"${RESTART_FREQ_ATM} -1"}
 OUTPUTFH=${OUTPUTFH:-"${FHOUT} -1"}
 if [ ! -z $longfcst ]; then
    FHMAX_FCST=$FHMAX
@@ -494,7 +494,7 @@ elif [ "${iau_delthrs}" != "-1" ]; then
 else
    FHMAX_FCST=$FHMAX
 fi
-sed -i -e "s/RESTART_FREQ/${RESTART_FREQ}/g" nems.configure
+sed -i -e "s/RESTART_FREQ/${RESTART_FREQ_OCN}/g" nems.configure
 
 if [ -z $skip_global_cycle ]; then
    # run global_cycle to update surface in restart file.
@@ -814,7 +814,7 @@ if [ -z $dont_copy_restart ]; then # if dont_copy_restart not set, do this
          touch ${datapathp1}/${charnanal}/INPUT/ca_data.nc
       fi
    done
-   #if [ $RESTART_FREQ -eq 3 ] && [ "$cold_start" != "true" ]; then
+   #if [ "$cold_start" != "true" ]; then
    #   for file in ${datestringa}*nc; do
    #      echo "copying $file to ${datapath2}/${charnanal}/INPUT"
    #      /bin/mv -f $file ${datapath2}/${charnanal}/INPUT
@@ -840,7 +840,7 @@ if [ -z $dont_copy_restart ]; then # if dont_copy_restart not set, do this
       /bin/mv -f $file ${datapathp1}/${charnanal}/INPUT/ocn_stoch.res.nc
    done
    fi
-   #if [ $RESTART_FREQ -eq 3 ] && [ "$cold_start" != "true" ]; then
+   #if [ "$cold_start" != "true" ]; then
    #   ls MOM.res.${datestring_ocna}*nc
    #   for file in MOM.res.${datestring_ocna}*nc; do
    #      echo "copying $file to ${datapath2}/${charnanal}/INPUT"
@@ -856,7 +856,7 @@ if [ -z $dont_copy_restart ]; then # if dont_copy_restart not set, do this
    #fi
    /bin/mv iced.${yrnext}-${monnext}-${daynext}-${secondofnextday}.nc ${datapathp1}/${charnanal}/INPUT
    /bin/mv ufs.cpld.cpl.r.${yrnext}-${monnext}-${daynext}-${secondofnextday}.nc ${datapathp1}/${charnanal}/INPUT
-   if [ $RESTART_FREQ -eq 3 ] && [ "$cold_start" != "true" ]; then
+   if [ "$cold_start" != "true" ]; then
       /bin/mv -f iced.${yeara}-${mona}-${daya}-${secondofdaya}.nc ${datapath2}/${charnanal}/INPUT
       /bin/mv -f ufs.cpld.cpl.r.${yeara}-${mona}-${daya}-${secondofdaya}.nc ${datapath2}/${charnanal}/INPUT
    fi

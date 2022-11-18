@@ -37,6 +37,17 @@ elif [ $NODES -eq 27 ]; then # 0.25 degree setup
   export nprocs_atm=960
   export nprocs_ice=40
   export nprocs_ocn=80  
+elif [ $NODES -eq 69 ]; then # p8 layout
+  export gsi_control_threads=4
+  export control_threads=1
+  export control_proc=2760
+  export layout="24,16" 
+  export write_groups=1
+  export write_tasks=96  
+  export nprocs_cpl=2304
+  export nprocs_atm=2400
+  export nprocs_ice=120
+  export nprocs_ocn=240
 elif [ $NODES -eq 94 ]; then # 0.25 degree setup
   export gsi_control_threads=4
   export control_threads=2
@@ -48,6 +59,17 @@ elif [ $NODES -eq 94 ]; then # 0.25 degree setup
   export nprocs_atm=1640
   export nprocs_ice=80
   export nprocs_ocn=160
+elif [ $NODES -eq 138 ]; then # p8 layout
+  export gsi_control_threads=4
+  export control_threads=2
+  export control_proc=5520
+  export layout="24,16" 
+  export write_groups=1
+  export write_tasks=96  
+  export nprocs_cpl=2304
+  export nprocs_atm=2400
+  export nprocs_ice=120
+  export nprocs_ocn=240
 else
   echo "processor layout for $NODES nodes not set"
   exit 1
