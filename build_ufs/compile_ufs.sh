@@ -25,5 +25,6 @@ patch -p 0 < ../mom_cap.diff
 
 cd tests
 ./compile.sh hera.intel "-DAPP=S2SW -D32BIT=ON -DCCPP_SUITES=FV3_GFS_v17_coupled_p8" coupled YES NO
+cd ../
 /bin/cp -f ufs-weather-model/tests/fv3_coupled.exe ../exec_${machine}/ufs_coupled.exe
 /bin/rm -rf ufs-weather-model
