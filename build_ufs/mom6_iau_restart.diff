@@ -1,0 +1,79 @@
+--- MOM6-interface/MOM6/src/ocean_data_assim/MOM_oda_incupd.F90
++++ MOM6-interface/MOM6/src/ocean_data_assim/MOM_oda_incupd.F90
+@@ -109,8 +109,8 @@ subroutine initialize_oda_incupd_fixed( G, GV, US, CS, restart_CS)
+   ! initialize time counter
+   CS%ncount = 0.0
+   ! register ncount in restart
+-  call register_restart_field(CS%ncount, "oda_incupd_ncount", .false., restart_CS,&
+-                              "Number of inc. update already done", "N/A")
++  !call register_restart_field(CS%ncount, "oda_incupd_ncount", .false., restart_CS,&
++  !                            "Number of inc. update already done", "N/A")
+ end subroutine initialize_oda_incupd_fixed
+ 
+ 
+@@ -210,12 +210,12 @@ subroutine initialize_oda_incupd( G, GV, US, param_file, CS, data_h, nz_data, re
+                        trim(mesg))
+ 
+   ! number of inc. update already done, CS%ncount, either from restart or set to 0.0
+-  if (query_initialized(CS%ncount, "oda_incupd_ncount", restart_CS) .and. &
+-      .not.reset_ncount) then
+-    CS%ncount = CS%ncount
+-  else
++!  if (query_initialized(CS%ncount, "oda_incupd_ncount", restart_CS) .and. &
++!      .not.reset_ncount) then
++!    CS%ncount = CS%ncount
++!  else
+     CS%ncount = 0.0
+-  endif
++!  endif
+   write(mesg,'(f4.1)') CS%ncount
+   if (is_root_pe()) &
+     call MOM_error(NOTE,"initialize_oda_incupd: Inc. update already done:"//&
+@@ -759,22 +759,22 @@ subroutine output_oda_incupd_inc(Time, G, GV, param_file, CS, US)
+   call Get_MOM_Input(dirs=dirs)
+   if (is_root_pe()) call MOM_error(NOTE,"output increments in output_directory")
+ 
+-  ! get a restart structure
+-  call restart_init(param_file, restart_CSp_tmp)
++! ! get a restart structure
++! call restart_init(param_file, restart_CSp_tmp)
+ 
+   ! register the variables to write
+-  call register_restart_field(CS%Inc(1)%p, "T_inc", .true., restart_CSp_tmp, &
+-                              "Pot. T. increment", "degC")
+-  call register_restart_field(CS%Inc(2)%p, "S_inc", .true., restart_CSp_tmp, &
+-                              "Salinity increment", "psu")
+-  call register_restart_field(CS%Ref_h%p, "h_obs", .true., restart_CSp_tmp, &
+-                              "Observational h", units=get_thickness_units(GV), conversion=GV%H_to_MKS)
+-  if (CS%uv_inc) then
+-    u_desc = var_desc("u_inc", "m s-1", "U-vel increment", hor_grid='Cu')
+-    v_desc = var_desc("v_inc", "m s-1", "V-vel increment", hor_grid='Cv')
+-    call register_restart_pair(CS%Inc_u%p, CS%Inc_v%p, u_desc, v_desc, &
+-              .false., restart_CSp_tmp, conversion=US%L_T_to_m_s)
+-  endif
++! call register_restart_field(CS%Inc(1)%p, "T_inc", .true., restart_CSp_tmp, &
++!                             "Pot. T. increment", "degC")
++! call register_restart_field(CS%Inc(2)%p, "S_inc", .true., restart_CSp_tmp, &
++!                             "Salinity increment", "psu")
++! call register_restart_field(CS%Ref_h%p, "h_obs", .true., restart_CSp_tmp, &
++!                             "Observational h", units=get_thickness_units(GV), conversion=GV%H_to_MKS)
++! if (CS%uv_inc) then
++!   u_desc = var_desc("u_inc", "m s-1", "U-vel increment", hor_grid='Cu')
++!   v_desc = var_desc("v_inc", "m s-1", "V-vel increment", hor_grid='Cv')
++!   call register_restart_pair(CS%Inc_u%p, CS%Inc_v%p, u_desc, v_desc, &
++!             .false., restart_CSp_tmp, conversion=US%L_T_to_m_s)
++! endif
+ 
+   ! get the name of the output file
+   call get_param(param_file, mdl, "ODA_INCUPD_OUTPUT_FILE", inc_file,&
+@@ -782,8 +782,8 @@ subroutine output_oda_incupd_inc(Time, G, GV, param_file, CS, US)
+                  default="MOM.inc")
+ 
+   ! write the increments file
+-  call save_restart(dirs%output_directory, Time, G, restart_CSp_tmp, &
+-                      filename=inc_file, GV=GV) !, write_ic=.true.)
++!  call save_restart(dirs%output_directory, Time, G, restart_CSp_tmp, &
++!                      filename=inc_file, GV=GV) !, write_ic=.true.)
+ 
+ end subroutine output_oda_incupd_inc
+ 
