@@ -1,8 +1,9 @@
 #!/bin/sh 
-# model was compiled with these 
+
 echo "starting at `date`"
+
 source $MODULESHOME/init/sh
-#skip_global_cycle=YES
+
 if [ "$cold_start" == "true" ]; then
    skip_global_cycle=YES
    FHROT=0
@@ -11,8 +12,8 @@ else
 fi
 
 export WGRIB=`which wgrib`
-
 export VERBOSE=${VERBOSE:-"NO"}
+export compress_on_copy=${compress_on_copy:-"NO"}
 export quilting=${quilting:-'.true.'}
 if [ "$VERBOSE" == "YES" ]; then
  set -x
@@ -775,10 +776,47 @@ if [ "$quilting" == ".true." ]; then
    done
 fi
 
-# move ocean and ice output,  still need to check for existance TBD
+# for running parallel nccopy to compress output if compress_on_copy==YES
+nodecount=0
+export nprocs=1
+export mpitaskspernode=1
+export OMP_NUM_THREADS=1
+totnodes=$NODES
+nccopy=`which nccopy`
+if [ $? -ne 0 ]; then
+   echo "no nccopy found, not compressing output..."
+   compress_on_copy="NO"
+fi
+
+# move ocean and ice output,  still need to check for existence TBD
 if [ -z $longfcst ]; then
-   /bin/mv -f ocn_*.nc ${DATOUT}
-   /bin/mv -f history/iceh_*.nc ${DATOUT}
+   if [ $compress_on_copy == "YES" ]; then
+       for file in ocn_*nc; do
+          export PGM="$nccopy -d 1 -s $PWD/$file ${DATOUT}/$file"
+          ${scriptsdir}/runmpi & 
+          nodecount=$((nodecount+1))
+          #if [ $nodecount -eq $totnodes ]; then
+          #   echo "waiting... nodecount=$nodecount"
+          #   wait
+          #   nodecount=0
+          #fi       
+       done
+       cd history
+       for file in iceh_*nc; do
+          export PGM="$nccopy -d 1 -s $PWD/$file ${DATOUT}/$file"
+          ${scriptsdir}/runmpi & 
+          nodecount=$((nodecount+1))
+          #if [ $nodecount -eq $totnodes ]; then
+          #   echo "waiting... nodecount=$nodecount"
+          #   wait
+          #   nodecount=0
+          #fi       
+       done
+       cd ..
+   else
+      /bin/mv -f ocn_*.nc ${DATOUT}
+      /bin/mv -f history/iceh_*.nc ${DATOUT}
+   fi
 else
    # for long forecast, just save few files
    for histfile in `ls -1t ocn_*nc | head -4`; do
@@ -797,6 +835,7 @@ if [ -z $dont_copy_restart ]; then # if dont_copy_restart not set, do this
    /bin/rm -rf ${datapathp1}/${charnanal}/RESTART ${datapathp1}/${charnanal}/INPUT
    mkdir -p ${datapathp1}/${charnanal}/INPUT
    cd RESTART
+   echo "start copying restarts `date`..."
    ls -l
    datestring="${yrnext}${monnext}${daynext}.${hrnext}0000."
    datestringa="${yeara}${mona}${daya}.${houra}0000."
@@ -805,57 +844,86 @@ if [ -z $dont_copy_restart ]; then # if dont_copy_restart not set, do this
    for file in ${datestring}*nc; do
       file2=`echo $file | cut -f3-10 -d"."`
       echo "copying $file to ${datapathp1}/${charnanal}/INPUT/$file2"
-      /bin/mv -f $file ${datapathp1}/${charnanal}/INPUT/$file2
-      if [ $? -ne 0 ]; then
-        echo "restart file missing..."
-        exit 1
+      if [ $compress_on_copy == "YES" ]; then
+         export PGM="$nccopy -d 1 -s $PWD/$file ${datapathp1}/${charnanal}/INPUT/$file2"
+         ${scriptsdir}/runmpi & 
+         nodecount=$((nodecount+1))
+         #if [ $nodecount -eq $totnodes ]; then
+         #   echo "waiting... nodecount=$nodecount"
+         #   wait
+         #   nodecount=0
+         #fi       
+      else
+         /bin/mv -f $file ${datapathp1}/${charnanal}/INPUT/$file2
+         if [ $? -ne 0 ]; then
+           echo "restart file missing..."
+           exit 1
+         fi
       fi
       if [ $file2 == "ca_data.tile1.nc" ]; then
          touch ${datapathp1}/${charnanal}/INPUT/ca_data.nc
       fi
    done
-   #if [ "$cold_start" != "true" ]; then
-   #   for file in ${datestringa}*nc; do
-   #      echo "copying $file to ${datapath2}/${charnanal}/INPUT"
-   #      /bin/mv -f $file ${datapath2}/${charnanal}/INPUT
-   #      if [ $? -ne 0 ]; then
-   #        echo "restart file missing..."
-   #        exit 1
-   #      fi
-   #      if [ $file2 == "ca_data.tile1.nc" ]; then
-   #         touch ${datapathp1}/${charnanal}/INPUT/ca_data.nc
-   #      fi
-   #   done
-   #fi
    ls MOM.res.${datestring_ocn}*nc
    for file in MOM.res.${datestring_ocn}*nc; do
       file2=MOM.res`echo $file | cut -c 28-32`
       echo "copying $file to ${datapathp1}/${charnanal}/INPUT/$file2"
-      /bin/mv -f $file ${datapathp1}/${charnanal}/INPUT/$file2
+      if [ $compress_on_copy == "YES" ]; then
+         export PGM="$nccopy -d 1 -s $PWD/$file ${datapathp1}/${charnanal}/INPUT/$file2"
+         ${scriptsdir}/runmpi & 
+         nodecount=$((nodecount+1))
+         #if [ $nodecount -eq $totnodes ]; then
+         #   echo "waiting... nodecount=$nodecount"
+         #   wait
+         #   nodecount=0
+         #fi       
+      else
+         /bin/mv -f $file ${datapathp1}/${charnanal}/INPUT/$file2
+      fi
    done
    if [ $perturbed_replay == "YES" ]; then
-   ls ocn_stoch.res.${datestring_ocn}*nc
-   for file in ocn_stoch.res.${datestring_ocn}*nc; do
-      echo "copying $file to ${datapathp1}/${charnanal}/INPUT/$ocn_stoc.res.nc"
-      /bin/mv -f $file ${datapathp1}/${charnanal}/INPUT/ocn_stoch.res.nc
-   done
+      ls ocn_stoch.res.${datestring_ocn}*nc
+      for file in ocn_stoch.res.${datestring_ocn}*nc; do
+         echo "copying $file to ${datapathp1}/${charnanal}/INPUT/$ocn_stoc.res.nc"
+         if [ $compress_on_copy == "YES" ]; then
+             export PGM="$nccopy -d 1 -s $PWD/$file ${datapathp1}/${charnanal}/INPUT/ocn_stoch.res.nc"
+             ${scriptsdir}/runmpi & 
+             nodecount=$((nodecount+1))
+             #if [ $nodecount -eq $totnodes ]; then
+             #   echo "waiting... nodecount=$nodecount"
+             #   wait
+             #   nodecount=0
+             #fi       
+         else
+            /bin/mv -f $file ${datapathp1}/${charnanal}/INPUT/ocn_stoch.res.nc
+         fi
+      done
    fi
-   #if [ "$cold_start" != "true" ]; then
-   #   ls MOM.res.${datestring_ocna}*nc
-   #   for file in MOM.res.${datestring_ocna}*nc; do
-   #      echo "copying $file to ${datapath2}/${charnanal}/INPUT"
-   #      /bin/mv -f $file ${datapath2}/${charnanal}/INPUT
-   #   done
-   #   if [ $perturbed_replay == "YES" ]; then
-   #   ls ocn_stoch.res.${datestring_ocna}*nc
-   #   for file in ocn_stoch.res.${datestring_ocna}*nc; do
-   #      echo "copying $file to ${datapath2}/${charnanal}/INPUT/ocn_stoch.res.nc"
-   #      /bin/mv -f $file ${datapath2}/${charnanal}/INPUT/ocn_stoch.res.nc
-   #   done
-   #   fi
-   #fi
-   /bin/mv iced.${yrnext}-${monnext}-${daynext}-${secondofnextday}.nc ${datapathp1}/${charnanal}/INPUT
-   /bin/mv ufs.cpld.cpl.r.${yrnext}-${monnext}-${daynext}-${secondofnextday}.nc ${datapathp1}/${charnanal}/INPUT
+   if [ $compress_on_copy == "YES" ]; then
+      file=iced.${yrnext}-${monnext}-${daynext}-${secondofnextday}.nc
+      export PGM="$nccopy -d 1 -s $PWD/$file ${datapathp1}/${charnanal}/INPUT/$file"
+      ${scriptsdir}/runmpi & 
+      nodecount=$((nodecount+1))
+      #if [ $nodecount -eq $totnodes ]; then
+      #   echo "waiting... nodecount=$nodecount"
+      #   wait
+      #   nodecount=0
+      #fi       
+      file=ufs.cpld.cpl.r.${yrnext}-${monnext}-${daynext}-${secondofnextday}.nc 
+      export PGM="$nccopy -d 1 -s $PWD/$file ${datapathp1}/${charnanal}/INPUT/$file"
+      ${scriptsdir}/runmpi & 
+      nodecount=$((nodecount+1))
+      #if [ $nodecount -eq $totnodes ]; then
+      #   echo "waiting... nodecount=$nodecount"
+      #   wait
+      #   nodecount=0
+      #fi       
+   else
+      /bin/mv -f iced.${yrnext}-${monnext}-${daynext}-${secondofnextday}.nc ${datapathp1}/${charnanal}/INPUT
+      /bin/mv -f ufs.cpld.cpl.r.${yrnext}-${monnext}-${daynext}-${secondofnextday}.nc ${datapathp1}/${charnanal}/INPUT
+   fi
+   wait
+   echo "done copying restarts `date`..."
    if [ "$cold_start" != "true" ]; then
       /bin/mv -f iced.${yeara}-${mona}-${daya}-${secondofdaya}.nc ${datapath2}/${charnanal}/INPUT
       /bin/mv -f ufs.cpld.cpl.r.${yeara}-${mona}-${daya}-${secondofdaya}.nc ${datapath2}/${charnanal}/INPUT
@@ -864,47 +932,13 @@ if [ -z $dont_copy_restart ]; then # if dont_copy_restart not set, do this
    ls -l ${datapathp1}/${charnanal}/INPUT
 fi
 
-# also move history files if copy_history_files is set.
-#if [ ! -z $copy_history_files ]; then
-  #/bin/mv -f fv3_historyp*.nc ${DATOUT}
-  # copy with compression
-  #n=1
-  #while [ $n -le 6 ]; do
-  #   # lossless compression
-  #   ncks -4 -L 5 -O fv3_historyp.tile${n}.nc ${DATOUT}/${charnanal}/fv3_historyp.tile${n}.nc
-  #   # lossy compression
-  #   #ncks -4 --ppc default=5 -O fv3_history.tile${n}.nc ${DATOUT}/${charnanal}/fv3_history.tile${n}.nc
-  #   /bin/rm -f fv3_historyp.tile${n}.nc
-  #   n=$((n+1))
-  #done
-#fi
 ls -l ${DATOUT}
 
+/bin/rm -f ocn_*nc history/iceh_*nc
 # remove symlinks from INPUT directory
 cd INPUT
 find -type l -delete
 cd ..
-#/bin/rm -rf RESTART # don't need RESTART dir anymore.
-# save RESTARTS at end of predictor segment (end of next window)
-#cd RESTART
-#mkdir -p SAVE
-#mv fv*nc SAVE
-#mv ca*nc SAVE
-#mv phy*nc SAVE
-#mv sfc*nc SAVE
-#mv atm_stoch.res.nc SAVE
-#mv ocn_stoch.res.nc SAVE
-#mv MOM.res_1.nc SAVE
-#mv MOM.res_2.nc SAVE
-#mv MOM.res_3.nc SAVE
-#mv MOM.res.nc SAVE
-#mv iced.${yrendnext}-${monendnext}-${dayendnext}-${secondofendnextday}.nc  SAVE
-#mv ufs.cpld.cpl.r.${yrendnext}-${monendnext}-${dayendnext}-${secondofendnextday}.nc SAVE
-#/bin/rm -f *
-#mv SAVE/* .
-#/bin/rm -rf SAVE
-#cd ..
-#ls -l RESTART
 /bin/rm -rf RESTART
 
 echo "all done at `date`"
