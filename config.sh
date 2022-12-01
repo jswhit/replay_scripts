@@ -10,8 +10,6 @@ export OCNRES=mx025
 #export RES=96   
 #export OCNRES=mx100
 
-#export skip_calc_increment='true'
-
 export exptname=C${RES}_replay_p8
 export coupled=${coupled:-'ATM_OCN_ICE'} # NO or ATM_OCN_ICE, should be set in submit_job.sh
 # The SUITE selection has been moved to the bottom of this script
@@ -29,6 +27,7 @@ export days_keep=1  # if save_hpss="true", delete local directory copy for the c
 export NGGODAS="false" # use NG-GODAS (6-h) instead of ORAS5 (24-h)
 
 # override values from above for debugging.
+#export skip_calc_increment='true'
 #export replay_run_observer='false'
 #export cleanup_fg='false'
 #export resubmit='false'

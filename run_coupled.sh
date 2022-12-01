@@ -315,6 +315,7 @@ cd ..
 # create netcdf increment files.
 if [ "$cold_start" == "false" ] && [ -z $skip_calc_increment ]; then
    cd INPUT
+   echo "calculating ATM increment `date`..."
 
    iaufhrs2=`echo $iaufhrs | sed 's/,/ /g'`
 # IAU - multiple increments.
@@ -375,6 +376,7 @@ EOF
       export OMP_NUM_THREADS=$threads_save
    done # do next forecast
    cd ..
+   echo "done calculating ATM increment `date`..."
 fi
 if [ $NGGODAS == "true" ]; then
     OCN_IAU=True
