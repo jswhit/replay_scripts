@@ -1,0 +1,49 @@
+# settings for do_landDA.sh for IMS test case
+
+############################
+# if calling from land-offline_workflow,vars in this section will already be set. Otherwise, need to be set here. 
+
+THISDATE=${analdatem3} # ANALDATE - OFFSET = valid time of restarts.
+JEDIWORKDIR=${datapath2}/tmpdir_landDA/
+OUTDIR=${datapath2}/landDA  
+#RSTRDIR=  # for replay, this is set in main.sh
+RES=384 #FV3 resolution
+TSTUB=oro_C${RES}.${OCNRES}
+TPATH=${FIXDIR}/FV3_fix_tiled/C${RES}/
+
+# directory where do_landDA.sh script is 
+LANDDADIR=${scriptsdir}/land-DA_update # if calling from submit_cycle.sh
+
+############################
+# DA options
+
+# DA algorithm and state being updated
+# options: "letkfoi_snow" , "letkf_snow"
+DAtype=letkfoi_snow
+
+# JEDI input obs. options : IMS, GHCN, GTS, SYNTH 
+OBS_TYPES=("GHCN" "IMS")   # format: ("OBS1" "OBS2") 
+# JEDI call type for each obs_type above. options: DA, HOFX
+JEDI_TYPES=("DA" "DA")   # format ("DA" "HOFX") 
+
+#  DA window lenth. Will generally be the same as the FCSTLEN 
+WINLEN=12
+
+# YAMLS. Options, either:
+# 1. "construct" to construct the YAML name, based on requested obs types and their availability 
+# 2. enter the desired YAML name (will not test for availability of obs)
+YAML_DA="letkfoi_replay_GFSv17.yaml"
+YAML_HOFX=construct
+
+# OPTIONAL:delete workdirectory after DA update 
+KEEPDADIR="NO" 
+SAVE_TILE="YES"
+
+# OPTIONAL: CHANGE JEDI DIRECTORIES
+# if using different JEDI VERSION, will likely need to edit your yamls.
+JEDI_EXECDIR="/lustre/${USER}/fv3-jedi/build/bin"
+# JEDI IODA-converter source directory (not needed?)
+#IODA_BUILD_DIR="/scratch2/BMC/gsienkf/UFS-RNR/UFS-RNR-stack/external/ioda-bundle/build/"
+OBSDIR="s3://noaa-bmc-none-ca-ufs-rnr/replay/inputs" # location of snow obs
+IMS_INDEX_FILE_PATH="/contrib/Jeffrey.S.Whitaker/IMS/index_files"
+GFSv17="YES"
