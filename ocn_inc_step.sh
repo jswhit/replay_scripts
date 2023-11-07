@@ -31,6 +31,10 @@ else
   # remove yesterday's ORAS5 file
          rm ${ocnanaldir}/ORAS5.${OCNRES}_${YYYYm1d}${MMm1d}${DDm1d}.ic.nc
       fi
+      if [ $machine == 'hera' ];then
+         #ln -sf ${ocnanaldir}/${yeara}${mona}${daya}/ORAS5.${OCNRES}.ic.nc ${ocnanaldir}/ORAS5.${OCNRES}_${yeara}${mona}${daya}.ic.nc
+         ln -sf ${ocnanaldir}/${yeara}${mona}${daya}/ORAS5.${OCNRES}.ic.nc ${ocnanaldir}/ORAS5.mx025_${yeara}${mona}${daya}.ic.nc
+      fi
       export "PGM=${execdir}/calc_ocean_increments_from_ORAS5 $analdate $datapath2 $ocnanaldir ${iau_forcing_factor_ocn}"
       nprocs=1 mpitaskspernode=1 ${scriptsdir}/runmpi 
       if [ $? -ne 0 ]; then

@@ -4,8 +4,8 @@ echo "running on $machine using $NODES nodes"
 # 1/4 deg
 export RES=384  
 export RES_INC=384
-export OCNRES=mx025
-export WAVE_MESH=b
+export OCNRES="mx025"
+export WAVE_MESH="glo_025"
 # 1-deg
 #export RES=96   
 #export OCNRES=mx100
@@ -61,6 +61,7 @@ if [ "$machine" == 'hera' ]; then
    module load nco/4.9.1
    module load wgrib
 elif [ "$machine" == 'aws' ]; then
+   export AWS_DEFAULT_REGION=us-east-2
    export basedir=/lustre/${USER}
    export datadir=$basedir
    export hsidir="null"
@@ -134,11 +135,11 @@ export biascorrdir=${basedir}/biascor
 
 # directory with analysis netcdf files
 if [ $machine == 'hera' ]; then
-    export replayanaldir=/scratch2/NCEPDEV/stmp1/Jeffrey.S.Whitaker/era5anl/C${RES}
+    export replayanaldir=/scratch2/BMC/gsienkf/Philip.Pegion/reanalysis/era5/C${RES}
     export replayanaldir_lores=/scratch2/NCEPDEV/stmp1/Jeffrey.S.Whitaker/era5anl/C${RES_INC}
-    export ocnanaldir=/scratch2/NCEPDEV/stmp1/Jeffrey.S.Whitaker/oras5/${OCNRES}
+    #export ocnanaldir=/scratch2/BMC/gsienkf/Philip.Pegion/UFS-ics/ICS/${OCNRES}/
     export iceanaldir=/scratch2/BMC/gsienkf/Philip.Pegion/ice_update_basedir
-    #export ocnanaldir=/scratch2/BMC/gsienkf/Philip.Pegion/UFS-coupled/ICS/${OCNRES}
+    export ocnanaldir=/scratch2/BMC/gsienkf/Philip.Pegion/UFS-coupled/ICS/${OCNRES}
 elif [ $machine == 'aws' ]; then
     export replayanaldir=/lustre/${USER}/era5/C${RES}
     export replayanaldir_lores=/contrib/${USER}/era5/C${RES_INC}

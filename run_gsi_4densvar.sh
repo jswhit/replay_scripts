@@ -1,7 +1,7 @@
 echo "Time starting run_gsi_4densvar `date` "
 tstart=`date +%s`
 
-VERBOSE=${VERBOSE:-"YES"}
+VERBOSE=${VERBOSE:-"NO"}
 if [[ "$VERBOSE" = "YES" ]]; then
    set -x
 fi
@@ -643,7 +643,10 @@ if [ $machine == 'aws' ]; then
    year=`echo $adate | cut -c1-4`
    mkdir -p $datobs
    echo "copying obs from s3 bucket `date`"
-   aws s3 cp  --no-sign-request s3://noaa-reanalyses-pds/observations/reanalysis/conv/prepbufr/${year}/${mon}/prepbufr/gdas.${year}${mon}${day}.t${hr}z.prepfur.nr ${datobs}/${prefix_obs}.prepbufr
+   aws s3 cp  --no-sign-request s3://noaa-reanalyses-pds/observations/reanalysis/conv/prepbufr/${year}/${mon}/prepbufr/gdas.${year}${mon}${day}.t${hr}z.prepbufr.nr ${datobs}/${prefix_obs}.prepbufr
+   if [ $? -ne 0 ];then
+      aws s3 cp  --no-sign-request s3://noaa-reanalyses-pds/observations/reanalysis/conv/prepbufr/${year}/${mon}/prepbufr.old/gdas.${year}${mon}${day}.t${hr}z.prepbufr.nr ${datobs}/${prefix_obs}.prepbufr
+   fi
    aws s3 cp  --no-sign-request s3://noaa-reanalyses-pds/observations/reanalysis/conv/prepbufr.acft_profiles/${year}/${mon}/bufr/gdas.${year}${mon}${day}.t${hr}z.prepbufr.acft_profiles.nr ${datobs}/${prefix_obs}.prepbufr.acft_profiles
    echo "done copying obs from s3 bucket `date`"
 fi

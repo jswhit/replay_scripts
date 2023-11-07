@@ -45,5 +45,5 @@ JEDI_EXECDIR="/lustre/${USER}/fv3-jedi/build/bin"
 # JEDI IODA-converter source directory (not needed?)
 #IODA_BUILD_DIR="/scratch2/BMC/gsienkf/UFS-RNR/UFS-RNR-stack/external/ioda-bundle/build/"
 OBSDIR="s3://noaa-bmc-none-ca-ufs-rnr/replay/inputs" # location of snow obs
-IMS_INDEX_FILE_PATH="/contrib/Jeffrey.S.Whitaker/IMS/index_files"
+IMS_INDEX_FILE_PATH="/lustre/${USER}/IMS/index_files"
 GFSv17="YES"

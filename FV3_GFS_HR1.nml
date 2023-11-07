@@ -36,7 +36,7 @@
   dz_min = 6
   psm_bc = 1
   grid_type = -1,
-  make_nh = MOUNTAIN,
+  make_nh = MAKE_NH,
   fv_debug = .false.,
   range_warn = .false.,
   reset_eta = .false.,
@@ -350,8 +350,8 @@
   FAISS = 99999
   FSNOL = FSNOL_PARM
   FSNOS = 99999
-  FSICL = 99999    
-  FSICS = 99999
+  FSICL = 0
+  FSICS = 0
   FTSFL = 99999
   FVETL = 99999
   FSOTL = 99999

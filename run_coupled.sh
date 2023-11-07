@@ -294,7 +294,7 @@ while [ $n -le 6 ]; do
  ln -fs $FIXDIR/${fv3_input_data}/INPUT_L127/oro_data_ss.tile${n}.nc oro_data_ss.tile${n}.nc
  n=$((n+1))
 done
-ln -fs $FIXDIR/${fv3_input_data}/INPUT_L127/grid_spec.nc  C${RES}_mosaic.nc
+ln -fs $FIXDIR/${fv3_input_data}/INPUT/grid_spec.nc  C${RES}_mosaic.nc
 ln -fs $FIXDIR/CPL_FIX/aC${RES}o${ORES3}/grid_spec.nc  grid_spec.nc
 # symlinks one level up from INPUT
 cd ..
@@ -323,7 +323,9 @@ ln -sf ${FIXDIR}/CICE_FIX/${ORES3}/* .
 if [ $running_wave == "YES" ];then
    ln -sf ${FIXDIR}/WW3_input_data_20220624/mod_def.points .
 # need to udpate to new wave gid
-   ln -sf ${FIXDIR}/WW3_input_data_20220624/mod_def.${WAVE_MESH}.ww3 mod_def.ww3
+   #ln -sf ${FIXDIR}/WW3_input_data_20220624/mod_def.${WAVE_MESH}.ww3 mod_def.ww3
+   ln -sf ${FIXDIR}/WW3_input_data_20220624/gfswave.mod_def.${WAVE_MESH} mod_def.ww3
+   
    ln -sf ${FIXDIR}/WW3_input_data_20220624/mesh.${WAVE_MESH}.nc .
 fi
 cd INPUT
@@ -566,7 +568,7 @@ write_tasks_per_group:   ${write_tasks}
 num_files:               2
 filename_base:           'dyn' 'phy'
 output_grid:             'gaussian_grid'
-output_file:             'netcdf' 'netcdf'
+output_file:             'netcdf_parallel' 'netcdf'
 nbits:                   14
 ideflate:                1
 ichunk2d:                ${LONB}
@@ -587,13 +589,18 @@ if [ "$cold_start" == "true" ]; then
   externalic=T
   na_init=1
   mountain=F
+  make_nh=T
   ocn_start=n
 else
   warm_start=T
   externalic=F
   na_init=0
   mountain=T
+  make_nh=F
   ocn_start=r
+fi
+if [ "$cold_start_ocean_only" == "true" ];then
+      ocn_start=n
 fi
 /bin/cp -f ${scriptsdir}/${SUITE}.nml input.nml
 #sed -i -e "s/SUITE/${SUITE}/g" input.nml
@@ -609,6 +616,7 @@ sed -i -e "s/CDMBGWD/${cdmbgwd}/g" input.nml
 sed -i -e "s/EXTERNAL_IC/${externalic}/g" input.nml
 sed -i -e "s/NA_INIT/${na_init}/g" input.nml
 sed -i -e "s/MOUNTAIN/${mountain}/g" input.nml
+sed -i -e "s/MAKE_NH/${make_nh}/g" input.nml
 sed -i -e "s/OCN_START/${ocn_start}/g" input.nml
 sed -i -e "s/FRAC_GRID/${FRAC_GRID}/g" input.nml
 sed -i -e "s/ISEED_CA/${ISEED_CA}/g" input.nml

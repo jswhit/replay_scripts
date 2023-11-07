@@ -122,8 +122,10 @@ fi
 if [ $exitstat -ne 0 ]; then
    echo "creating history tar file failed"
    echo "no" > ${datapath}/${analdate}/logs/hpss.log
+   cp -r ${datapath}/${analdate}/logs ${datapath}/log_archive/$analdate
    exit $exitstat
 fi
 echo "archiving was a success"
 echo "yes" > ${datapath}/${analdate}/logs/hpss.log
+cp -r ${datapath}/${analdate}/logs ${datapath}/log_archive/$analdate
 exit 0

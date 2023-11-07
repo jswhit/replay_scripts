@@ -71,7 +71,9 @@ if [ $ierr -ne 0 ]; then
 fi
 # move old restart and copy in new on
 mv ${datapath2}/${charnanal}/INPUT/iced.${YYYY}-${MM}-${DD}-32400.nc ${datapath2}/${charnanal}/INPUT/bkg_iced.${YYYY}-${MM}-${DD}-32400.nc 
-mv ${RUNDIR}/output/iced.${YYYY}-${MM}-${DD}-32400.nc ${datapath2}/${charnanal}/INPUT/iced.${YYYY}-${MM}-${DD}-32400.nc
+mv ${RUNDIR}/output/iced.${YYYY}-${MM}-${DD}-32400.nc ${datapath2}/${charnanal}/INPUT/anl_iced.${YYYY}-${MM}-${DD}-32400.nc
+cd ${datapath2}/${charnanal}/INPUT/
+/lustre/${USER}/conda_ufs/bin/python ${scriptsdir}/limit_snow_enthalpy.py iced.${YYYY}-${MM}-${DD}-32400.nc
 cd ${scriptsdir}
 if [ $? -eq 0 ]; then
    rm -rf $RUNDIR

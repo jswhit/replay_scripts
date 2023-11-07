@@ -1,0 +1,32 @@
+#!/bin/sh
+#SBATCH -t 00:30:00
+#SBATCH -p compute
+#SBATCH --ntasks 2520
+#SBATCH --nodes  21
+#SBATCH -J ufs_era5_replay
+export NODES=$SLURM_NNODES
+export corespernode=$SLURM_CPUS_ON_NODE
+echo NODES=$NODES
+echo corespernode=$corespernode
+export machine='aws'
+
+# for control forecast
+if [ $NODES -eq 21 ]; then # 0.25 degree setup
+  export control_threads=1
+  export control_proc=2520
+  export write_groups=2 # write groups for control forecast.
+  export write_tasks=48
+  export layout="12,12" # layout_x,layout_y (total # mpi tasks = $layout_x*$layout_y*6=($fg_proc/$fg_threads) - $write_tasks*$write_groups)    # 2 threads
+#  export layout="12,24" # layout_x,layout_y (total # mpi tasks = $layout_x*$layout_y*6=($fg_proc/$fg_threads) - $write_tasks*$write_groups)   # no threads
+  export nprocs_cpl=1728
+  export nprocs_atm=1920
+  export nprocs_ice=120
+  export nprocs_ocn=240
+  export nprocs_wav=240
+  export nprocs_gsi=1728
+else
+  echo "processor layout for $NODES nodes not set"
+  exit 1
+fi
+
+export gsi_control_threads=6

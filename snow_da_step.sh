@@ -27,8 +27,20 @@ if [ $do_snowDA == 'true' ] && [ $fg_only == 'false' ] && [ $cold_start == 'fals
       fi
       ${scriptsdir}/land-DA_update/do_landDA.sh settings_snowDA_${machine} > ${current_logdir}/landDA.out 2>&1
       if [[ $? != 0 ]]; then
-         echo "$analdate land DA failed, exiting"
-         exit 1
+         echo "$analdate land DA failed, trying again"
+         sleep 15
+         ${scriptsdir}/land-DA_update/do_landDA.sh settings_snowDA_${machine} > ${current_logdir}/landDA.out 2>&1
+         if [[ $? != 0 ]]; then
+            echo "$analdate land DA failed, exiting"
+            exit 1
+         else
+            echo "$analdate finished land DA after 2nd try `date`"
+            echo "yes" > ${current_logdir}/landDA.log 2>&1
+            rm -rf ${datapath2}/landDA/DA/hofx
+            rm -rf ${datapath2}/landDA/DA/IMSproc
+#         mv ${datapath2}/landDA/DA/logs/* ${current_logdir}
+            rm -rf ${datapath2}/landDA/DA/jedi_incr/*
+         fi
       else
          echo "$analdate finished land DA `date`"
          echo "yes" > ${current_logdir}/landDA.log 2>&1

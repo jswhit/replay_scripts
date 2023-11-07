@@ -1,8 +1,8 @@
 #!/bin/sh
 #SBATCH -t 00:30:00
 #SBATCH -p compute
-#SBATCH --ntasks 2784
-#SBATCH --nodes  29
+#SBATCH --ntasks 2688
+#SBATCH --nodes  28
 #SBATCH -J ufs_era5_replay
 export NODES=$SLURM_NNODES
 export corespernode=$SLURM_CPUS_ON_NODE
@@ -26,14 +26,14 @@ if [ $NODES -eq 27 ]; then # 0.25 degree setup
 elif [ $NODES -eq 28 ]; then # 0.25 degree setup
   export control_threads=1
   export control_proc=2688 
-  export write_groups=1 # write groups for control forecast.
+  export write_groups=2 # write groups for control forecast.
   export write_tasks=48
   export layout="12,12" # layout_x,layout_y (total # mpi tasks = $layout_x*$layout_y*6=($fg_proc/$fg_threads) - $write_tasks*$write_groups)    # 2 threads
 #  export layout="12,24" # layout_x,layout_y (total # mpi tasks = $layout_x*$layout_y*6=($fg_proc/$fg_threads) - $write_tasks*$write_groups)   # no threads
   export nprocs_cpl=1728
-  export nprocs_atm=1824
+  export nprocs_atm=1920
   export nprocs_ice=192
-  export nprocs_ocn=384
+  export nprocs_ocn=288
   export nprocs_wav=288
   export nprocs_gsi=1728
 elif [ $NODES -eq 29 ]; then # 0.25 degree setup

@@ -1,4 +1,6 @@
 #!/bin/sh 
+HH=`expr $analdate | cut -c9-10`
+if [ $HH == '00' ];then
 tstart=`date +%s`
 # run gsi observer
 if [ $fg_only == 'false' ] && [ $cold_start == 'false' ] && [ $replay_run_observer == "true" ]; then
@@ -32,4 +34,5 @@ fi
 tend=`date +%s`
 dt=`expr $tend - $tstart`
 echo "gsi step took $dt seconds"
+fi
 exit 0

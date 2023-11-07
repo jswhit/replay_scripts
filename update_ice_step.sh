@@ -4,7 +4,11 @@ export charnanal='control'
 if [ $update_seaice == 'true' ];then
    # update ice restart file from previous cycle
    if [ $ANALHR -eq '12' ]; then
-      if [ -f INPUT/bkg_iced.${year_start}-${mon_start}-${day_start}-${secondofday}.nc ];then
+      YYYY=`expr $analdate | cut -c1-4`
+      MM=`expr $analdate | cut -c5-6`
+      DD=`expr $analdate | cut -c7-8`
+      pwd
+      if [ -f ${datapath2}/${charnanal}/INPUT/bkg_iced.${YYYY}-${MM}-${DD}-32400.nc ];then
          echo "skipping ice update"
       else
          echo "running ice update"

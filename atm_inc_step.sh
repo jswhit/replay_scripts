@@ -23,11 +23,14 @@ if [ "$cold_start" == "false" ] && [ -z $skip_calc_increment ]; then
   no_delzinc=.false.
   forcing_factor=${ff},
   taper_strat=.true.
+  taper_strat_ozone=.true.
   taper_pbl=.false.
   ak_bot=10000.,
   ak_top=5000.,
   bk_bot=1.0,
   bk_top=0.95
+  ak_bot_ozone=10.
+  ak_top_ozone=1.
 /
 EOF
       cat calc_increment_ncio.nml

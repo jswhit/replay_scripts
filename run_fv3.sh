@@ -481,11 +481,13 @@ if [ "$cold_start" == "true" ]; then
   externalic=T
   na_init=1
   mountain=F
+  make_nh=T
 else
   warm_start=T
   externalic=F
   na_init=0
   mountain=T
+  make_nh=F
 fi
 /bin/cp -f ${scriptsdir}/${SUITE}.nml input.nml
 #sed -i -e "s/SUITE/${SUITE}/g" input.nml
@@ -501,6 +503,7 @@ sed -i -e "s/CDMBGWD/${cdmbgwd}/g" input.nml
 sed -i -e "s/EXTERNAL_IC/${externalic}/g" input.nml
 sed -i -e "s/NA_INIT/${na_init}/g" input.nml
 sed -i -e "s/MOUNTAIN/${mountain}/g" input.nml
+sed -i -e "s/MAKE_NH/${make_nh}/g" input.nml
 sed -i -e "s/FRAC_GRID/${FRAC_GRID}/g" input.nml
 sed -i -e "s/ISEED_CA/${ISEED_CA}/g" input.nml
 # gcycle related params
