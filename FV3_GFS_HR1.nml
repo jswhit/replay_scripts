@@ -203,7 +203,7 @@
   rrtmgp_nBandsLW    = 16
   rrtmgp_nBandsSW    = 14
   doGP_cldoptics_LUT = .true.
-  doGP_lwscat        = .true
+  doGP_lwscat        = .true.
   do_skeb        = DO_skeb  
   do_sppt        = DO_sppt 
   do_shum        = DO_shum  
